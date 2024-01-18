@@ -26,7 +26,7 @@ public class GetSPDetailsMW {
     @Autowired
     private ResponseMessage responseMessage;
 
-    public ResponseEntity<Object> getSPDetailsByToken(String token, String role) {
+    public ResponseEntity<ResponseMessage> getSPDetailsByToken(String token, String role) {
         try {
             Mono<Map<String, Object>> userDetailsMono = webClient.get()
                     .uri(authServiceUrl)
@@ -41,16 +41,18 @@ public class GetSPDetailsMW {
 
             Map<String, Object> userDetails = userDetailsMono.block();
             if (userDetails != null) {
-                System.out.println(userDetails.get("id"));
+                responseMessage.setSuccess(true);
+                responseMessage.setMessage(userDetails.get("id").toString());
+                return ResponseEntity.ok().body(responseMessage);
+            } else {
+                responseMessage.setSuccess(false);
+                responseMessage.setMessage("No user exists");
+                return ResponseEntity.badRequest().body(responseMessage);
             }
-            responseMessage.setSuccess(true);
-            responseMessage.setMessage(userDetails.get("id").toString());
-
-            return ResponseEntity.ok().body(responseMessage);
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Internal Server Error "+e.getMessage());
+            responseMessage.setMessage("Internal Server Error " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
         }
     }

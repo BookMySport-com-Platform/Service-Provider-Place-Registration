@@ -4,8 +4,9 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.bookmysport.service_provider_place_reg.Models.SPPlaceRegModel;
+import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 
-public interface SPRepository extends JpaRepository<SPPlaceRegModel, UUID> {
+public interface ImagesDBRepo extends JpaRepository<ImagesDB, UUID> {
     
 }
+
