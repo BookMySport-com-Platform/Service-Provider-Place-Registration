@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
+import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
+import com.bookmysport.service_provider_place_reg.Models.SportsDB;
+import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
@@ -28,6 +31,9 @@ public class SPMainController {
     @Autowired
     private ImageUploadService imageUploadService;
 
+    @Autowired
+    private FetchSportsImages fetchSportsImages;
+
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
         return getSPDetailsMW.getSPDetailsByToken(token, role);
@@ -40,8 +46,18 @@ public class SPMainController {
     }
 
     @PostMapping("uploadimages")
-    public ResponseEntity<ResponseMessage> uploadImages(@RequestHeader String token, @RequestHeader String role,@RequestHeader List<String> imagePaths)
-    {
-        return imageUploadService.uploadImageService(token,role,imagePaths);
+    public ResponseEntity<ResponseMessage> uploadImages(@RequestHeader String token, @RequestHeader String role,
+            @RequestHeader List<String> imagePaths) {
+        return imageUploadService.uploadImageService(token, role, imagePaths);
     }
+
+    @GetMapping("getsports")
+    public List<SportsDB> getAllSports(@RequestHeader String token, @RequestHeader String role) {
+        return fetchSportsImages.fetchSportsService(token, role);
+    }
+
+    @GetMapping("getimages")
+    public List<ImagesDB> getAllImages(@RequestHeader String token, @RequestHeader String role) {
+        return fetchSportsImages.fetchImagesService(token, role);
+    } 
 }
