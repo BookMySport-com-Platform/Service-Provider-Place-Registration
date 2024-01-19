@@ -31,17 +31,22 @@ public class ImageUploadService {
 
     public ResponseEntity<ResponseMessage> uploadImageService(String token, String role, List<String> imagePaths) {
         try {
-            ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
-
+            
             for (int i = 0; i < imagePaths.size(); i++) {
+
+                //Need to figure out the bug (If we place the spid which is on line 37 outside for loop then the iteration after i=0, will be stopped with an exeption saying Long string for an UUID.)
+                ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
+                
                 ImagesDB imagesDB = new ImagesDB();
+
                 UUID imageUUID = UUID.randomUUID();
                 imagesDB.setImageId(imageUUID);
+
                 imagesDB.setSpId(UUID.fromString(spId.getBody().getMessage()));
 
                 KeyPath keyPath = new KeyPath();
                 keyPath.setKey(imageUUID.toString());
-                keyPath.setPath(imagePaths.get(i));
+                keyPath.setPath(imagePaths.get(i)); 
 
                 imagesDB.setImageURL(s3PutObjectService.putObjectService(spId.getBody().getMessage(), keyPath).getBody()
                         .getMessage());
@@ -54,7 +59,7 @@ public class ImageUploadService {
             return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Internal Server Error " + e.getMessage());
+            responseMessage.setMessage("Internal Server Error inside ImageUploadService.java " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
         }
 

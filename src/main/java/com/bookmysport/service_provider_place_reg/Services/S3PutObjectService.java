@@ -26,7 +26,7 @@ public class S3PutObjectService {
     @Autowired
     private ResponseMessage responseMessage;
 
-    public boolean checkObjectInBucket(String spId,String bucketName, String key) {
+    public boolean checkObjectInBucket(String bucketName, String key) {
         S3Client s3Client = S3Data.s3Client;
 
         try {
@@ -48,7 +48,7 @@ public class S3PutObjectService {
         S3Presigner s3Client = S3Presigner.builder().region(S3Data.region).build();
 
         try {
-            if (checkObjectInBucket(spId,S3Data.bucketName, key)) {
+            if (checkObjectInBucket(S3Data.bucketName, key)) {
                 GetObjectRequest request = GetObjectRequest.builder()
                         .bucket(S3Data.bucketName)
                         .key(key)
