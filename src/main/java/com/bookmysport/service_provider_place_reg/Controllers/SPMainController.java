@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
+import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("spr/api")
 public class SPMainController {
 
     @Autowired
@@ -23,6 +24,9 @@ public class SPMainController {
 
     @Autowired
     private UploadSportsService uploadSportsService;
+
+    @Autowired
+    private ImageUploadService imageUploadService;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -33,5 +37,11 @@ public class SPMainController {
     public ResponseEntity<ResponseMessage> uploadSports(@RequestHeader String token, @RequestHeader String role,
             @RequestHeader List<String> sports) {
         return uploadSportsService.uploadSportsInfoService(sports, token, role);
+    }
+
+    @PostMapping("uploadimages")
+    public ResponseEntity<ResponseMessage> uploadImages(@RequestHeader String token, @RequestHeader String role,@RequestHeader List<String> imagePaths)
+    {
+        return imageUploadService.uploadImageService(token,role,imagePaths);
     }
 }
