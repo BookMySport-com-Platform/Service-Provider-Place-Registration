@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
 import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
+import com.bookmysport.service_provider_place_reg.Models.PriceSportCourts;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
@@ -19,7 +21,7 @@ import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
 @RestController
-@RequestMapping("spr/api")
+@RequestMapping("api")
 public class SPMainController {
 
     @Autowired
@@ -41,8 +43,8 @@ public class SPMainController {
 
     @PostMapping("uploadsports")
     public ResponseEntity<ResponseMessage> uploadSports(@RequestHeader String token, @RequestHeader String role,
-            @RequestHeader List<String> sports) {
-        return uploadSportsService.uploadSportsInfoService(sports, token, role);
+            @RequestBody List<PriceSportCourts> pricePerSport) {
+        return uploadSportsService.uploadSportsInfoService(pricePerSport, token, role);
     }
 
     @PostMapping("uploadimages")
