@@ -61,5 +61,11 @@ public class SPMainController {
     @GetMapping("getimages")
     public List<ImagesDB> getAllImages(@RequestHeader String token, @RequestHeader String role) {
         return fetchSportsImages.fetchImagesService(token, role);
-    } 
+    }
+
+    @GetMapping("getsportbyspidandsportid")
+    public ResponseEntity<Object> getSportBySportIdAndSpId(@RequestHeader String token,@RequestHeader String role,@RequestHeader String sportId)
+    {
+        return fetchSportsImages.fetchSportBySportIdAndSpIdService(token, role, sportId);
+    }
 }
