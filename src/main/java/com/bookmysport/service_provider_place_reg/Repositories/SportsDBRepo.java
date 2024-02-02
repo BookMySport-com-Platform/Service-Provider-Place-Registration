@@ -9,4 +9,5 @@ import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 
 public interface SportsDBRepo extends JpaRepository<SportsDB, UUID> {
     List<SportsDB> findBySpId(UUID spId);
+    SportsDB findBySportName(String sportName);
 }

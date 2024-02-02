@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
@@ -24,4 +25,10 @@ public class SportsDB {
     private String sportName;
     
     private UUID spId;
+
+    @NotNull
+    private int pricePerHour;
+
+    @NotNull
+    private int numberOfCourts;
 }
