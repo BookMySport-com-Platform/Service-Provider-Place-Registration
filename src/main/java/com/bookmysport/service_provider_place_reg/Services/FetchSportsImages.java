@@ -43,12 +43,11 @@ public class FetchSportsImages {
         return images;
     }
 
-    public ResponseEntity<Object> fetchSportBySportIdAndSpIdService(String token, String role, String sportId) {
+    public ResponseEntity<Object> fetchSportBySportIdAndSpIdService(String spId, String sportId) {
         try {
-            ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
-
+            System.out.println("SportId is: "+UUID.fromString(sportId));
             SportsDB sortedBySportIdAndSpId = sportsDBRepo
-                    .findBySpIdAndSportId(UUID.fromString(spId.getBody().getMessage()), UUID.fromString(sportId));
+                    .findBySpIdAndSportId(UUID.fromString(spId), UUID.fromString(sportId));
 
             if (sortedBySportIdAndSpId != null) {
                 return ResponseEntity.ok().body(sortedBySportIdAndSpId);
