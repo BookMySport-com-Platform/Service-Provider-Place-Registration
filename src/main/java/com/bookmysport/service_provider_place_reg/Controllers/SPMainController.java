@@ -66,7 +66,6 @@ public class SPMainController {
     @GetMapping("getsportbyspidandsportid")
     public ResponseEntity<Object> getSportBySportIdAndSpId(@RequestHeader String spId,@RequestHeader String sportId)
     {
-        System.out.println(fetchSportsImages.fetchSportBySportIdAndSpIdService(spId, sportId));
         return fetchSportsImages.fetchSportBySportIdAndSpIdService(spId ,sportId);
     }
 }

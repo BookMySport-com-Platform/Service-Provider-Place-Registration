@@ -45,7 +45,6 @@ public class FetchSportsImages {
 
     public ResponseEntity<Object> fetchSportBySportIdAndSpIdService(String spId, String sportId) {
         try {
-            System.out.println("SportId is: "+UUID.fromString(sportId));
             SportsDB sortedBySportIdAndSpId = sportsDBRepo
                     .findBySpIdAndSportId(UUID.fromString(spId), UUID.fromString(sportId));
 
