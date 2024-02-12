@@ -39,7 +39,6 @@ public class S3PutObjectService {
 
             return true;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return false;
         }
     }
@@ -95,9 +94,7 @@ public class S3PutObjectService {
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            System.out.println(e.getMessage());
             responseMessage.setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied");
-
             return ResponseEntity.badRequest().body(responseMessage);
         }
     }
