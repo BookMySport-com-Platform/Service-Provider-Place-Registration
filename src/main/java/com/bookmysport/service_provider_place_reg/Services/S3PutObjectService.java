@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
@@ -43,7 +44,7 @@ public class S3PutObjectService {
         }
     }
 
-    public ResponseEntity<ResponseMessage> preSignedURLService(String spId,String key) {
+    public ResponseEntity<ResponseMessage> preSignedURLService(String spId, String key) {
         S3Presigner s3Client = S3Presigner.builder().region(S3Data.region).build();
 
         try {
@@ -71,7 +72,7 @@ public class S3PutObjectService {
             }
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Internal Server Error "+e.getMessage());
+            responseMessage.setMessage("Internal Server Error " + e.getMessage());
             return ResponseEntity.badRequest().body(responseMessage);
         }
     }
@@ -85,16 +86,24 @@ public class S3PutObjectService {
                     .key(spId + '/' + keyPath.getKey())
                     .build();
 
-            client.putObject(putOb, RequestBody.fromFile(new File(keyPath.getPath())));
+            PutObjectResponse response = client.putObject(putOb, RequestBody.fromFile(new File(keyPath.getPath())));
+            
+            if (response.eTag().isEmpty()) {
+                responseMessage.setSuccess(false);
+                responseMessage
+                        .setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied " + response.eTag());
+                return ResponseEntity.ok().body(responseMessage);
+            } else {
+                responseMessage.setSuccess(true);
+                responseMessage
+                        .setMessage(preSignedURLService(spId, spId + '/' + keyPath.getKey()).getBody().getMessage());
 
-            responseMessage.setSuccess(true);
-            responseMessage.setMessage(preSignedURLService(spId,spId + '/' + keyPath.getKey()).getBody().getMessage());
-
-            return ResponseEntity.ok().body(responseMessage);
+                return ResponseEntity.ok().body(responseMessage);
+            }
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied");
+            responseMessage.setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied "+e.getMessage());
             return ResponseEntity.badRequest().body(responseMessage);
         }
     }

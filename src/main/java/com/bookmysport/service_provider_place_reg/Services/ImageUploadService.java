@@ -31,12 +31,16 @@ public class ImageUploadService {
 
     public ResponseEntity<ResponseMessage> uploadImageService(String token, String role, List<String> imagePaths) {
         try {
-            
+
+            String failedImages = "";
+
             for (int i = 0; i < imagePaths.size(); i++) {
 
-                //Need to figure out the bug (If we place the spid which is on line 37 outside for loop then the iteration after i=0, will be stopped with an exeption saying Long string for an UUID.)
+                // Need to figure out the bug (If we place the spid which is on line 37 outside
+                // for loop then the iteration after i=0, will be stopped with an exeption
+                // saying Long string for an UUID.)
                 ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
-                
+
                 ImagesDB imagesDB = new ImagesDB();
 
                 UUID imageUUID = UUID.randomUUID();
@@ -46,17 +50,30 @@ public class ImageUploadService {
 
                 KeyPath keyPath = new KeyPath();
                 keyPath.setKey(imageUUID.toString());
-                keyPath.setPath(imagePaths.get(i)); 
+                keyPath.setPath(imagePaths.get(i));
 
-                imagesDB.setImageURL(s3PutObjectService.putObjectService(spId.getBody().getMessage(), keyPath).getBody()
-                        .getMessage());
+                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), keyPath).getBody();
 
-                imagesDBRepo.save(imagesDB);
+                if (messageFromPutObjectService.getSuccess()) {
+                    imagesDB.setImageURL(messageFromPutObjectService.getMessage());
+                    imagesDBRepo.save(imagesDB);
+                } else {
+                    failedImages += keyPath.getPath();
+                    failedImages += ", ";
+                    failedImages+= "Reason: "+messageFromPutObjectService.getMessage();
+                }
             }
 
-            responseMessage.setSuccess(true);
-            responseMessage.setMessage("Upload successfully!");
-            return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+            if (failedImages.length() == 0) {
+                responseMessage.setSuccess(true);
+                responseMessage.setMessage("Upload successfully!");
+                return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+            } else {
+                responseMessage.setSuccess(false);
+                responseMessage.setMessage("Upload failed for: " + failedImages);
+                return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+            }
+
         } catch (Exception e) {
             responseMessage.setSuccess(false);
             responseMessage.setMessage("Internal Server Error inside ImageUploadService.java " + e.getMessage());
