@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
+import com.bookmysport.service_provider_place_reg.Services.UpdateSportDetials;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
 @RestController
@@ -35,6 +37,9 @@ public class SPMainController {
 
     @Autowired
     private FetchSportsImages fetchSportsImages;
+
+    @Autowired
+    private UpdateSportDetials updateSportDetials;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -67,5 +72,11 @@ public class SPMainController {
     public ResponseEntity<Object> getSportBySportIdAndSpId(@RequestHeader String spId,@RequestHeader String sportId)
     {
         return fetchSportsImages.fetchSportBySportIdAndSpIdService(spId ,sportId);
+    }
+
+    @PutMapping("updatesportdetails")
+    public ResponseEntity<ResponseMessage> updateSportDetails(@RequestBody SportsDB latestsportDetails)
+    {
+        return updateSportDetials.updateSportDetailsService(latestsportDetails);
     }
 }
