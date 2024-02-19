@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 import com.bookmysport.service_provider_place_reg.Models.PriceSportCourts;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Models.SportsDB;
+import com.bookmysport.service_provider_place_reg.Services.DeleteImagesService;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.UpdateSportDetials;
@@ -40,6 +42,9 @@ public class SPMainController {
 
     @Autowired
     private UpdateSportDetials updateSportDetials;
+
+    @Autowired
+    private DeleteImagesService deleteImagesService;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -78,5 +83,11 @@ public class SPMainController {
     public ResponseEntity<ResponseMessage> updateSportDetails(@RequestBody SportsDB latestsportDetails)
     {
         return updateSportDetials.updateSportDetailsService(latestsportDetails);
+    }
+
+    @DeleteMapping("deleteimage")
+    public ResponseEntity<ResponseMessage> deleteImage(@RequestBody ImagesDB imageInfo)
+    {
+        return deleteImagesService.deleteImageService(imageInfo);
     }
 }

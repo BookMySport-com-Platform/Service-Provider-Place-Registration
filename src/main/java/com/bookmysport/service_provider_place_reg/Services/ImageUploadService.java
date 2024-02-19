@@ -44,12 +44,13 @@ public class ImageUploadService {
                 ImagesDB imagesDB = new ImagesDB();
 
                 UUID imageUUID = UUID.randomUUID();
+                UUID keyToBeSet=imageUUID;
                 imagesDB.setImageId(imageUUID);
 
                 imagesDB.setSpId(UUID.fromString(spId.getBody().getMessage()));
 
                 KeyPath keyPath = new KeyPath();
-                keyPath.setKey(imageUUID.toString());
+                keyPath.setKey(keyToBeSet.toString());
                 keyPath.setPath(imagePaths.get(i));
 
                 ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), keyPath).getBody();
