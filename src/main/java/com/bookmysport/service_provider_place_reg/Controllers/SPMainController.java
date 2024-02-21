@@ -21,6 +21,7 @@ import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 import com.bookmysport.service_provider_place_reg.Services.DeleteImagesService;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
+import com.bookmysport.service_provider_place_reg.Services.SearchPlaygroundService;
 import com.bookmysport.service_provider_place_reg.Services.UpdateSportDetials;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
@@ -45,6 +46,9 @@ public class SPMainController {
 
     @Autowired
     private DeleteImagesService deleteImagesService;
+
+    @Autowired
+    private SearchPlaygroundService searchPlaygroundService;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -89,5 +93,11 @@ public class SPMainController {
     public ResponseEntity<ResponseMessage> deleteImage(@RequestBody ImagesDB imageInfo)
     {
         return deleteImagesService.deleteImageService(imageInfo);
+    }
+
+    @GetMapping("getbysportname")
+    public List<Object> searchBySportName(@RequestHeader String searchItem)
+    {
+        return searchPlaygroundService.searchBySportName(searchItem);
     }
 }
