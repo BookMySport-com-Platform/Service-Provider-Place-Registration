@@ -35,7 +35,7 @@ public class UploadSportsService {
 
             for (int i = 0; i < pricePerSport.size(); i++) {
 
-                SportsDB sportExistence=sportsDBRepo.findBySportName(pricePerSport.get(i).getSport());
+                SportsDB sportExistence=sportsDBRepo.findBySpIdAndSportName(UUID.fromString(spId.getBody().getMessage()),pricePerSport.get(i).getSport());
 
                 if (sportExistence == null) {
                     SportsDB sportsdb = new SportsDB();

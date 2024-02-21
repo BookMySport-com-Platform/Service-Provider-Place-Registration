@@ -18,4 +18,12 @@ public interface SportsDBRepo extends JpaRepository<SportsDB, UUID> {
     @Transactional
     @Query(value = "SELECT * FROM sports_db WHERE sp_id=:spId AND sport_id=:sportId",nativeQuery = true)
     SportsDB findBySpIdAndSportId(@Param("spId") UUID spId, @Param("sportId") UUID sportId);
+
+    @Transactional
+    @Query(value="SELECT * FROM sports_db WHERE sport_name like %?1% ",nativeQuery = true)
+    List<SportsDB> findBySearch(String searchItem);
+
+    @Transactional
+    @Query(value = "SELECT * FROM sports_db WHERE sp_id=:spId AND sport_name =:sportName",nativeQuery = true)
+    SportsDB findBySpIdAndSportName(@Param("spId") UUID spId, @Param("sportName") String sportName);
 }
