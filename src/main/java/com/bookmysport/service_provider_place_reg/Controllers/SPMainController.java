@@ -1,11 +1,13 @@
 package com.bookmysport.service_provider_place_reg.Controllers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,7 @@ import com.bookmysport.service_provider_place_reg.Models.PriceSportCourts;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 import com.bookmysport.service_provider_place_reg.Services.DeleteImagesService;
+import com.bookmysport.service_provider_place_reg.Services.DeleteSport;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.SearchPlaygroundService;
@@ -49,6 +52,9 @@ public class SPMainController {
 
     @Autowired
     private SearchPlaygroundService searchPlaygroundService;
+
+    @Autowired
+    private DeleteSport deleteSportService;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -99,5 +105,11 @@ public class SPMainController {
     public List<Object> searchBySportName(@RequestHeader String searchItem)
     {
         return searchPlaygroundService.searchBySportName(searchItem);
+    }
+
+    @DeleteMapping("deletesport")
+    public ResponseEntity<ResponseMessage> deleteSport(@RequestHeader String token ,@RequestHeader String role ,@RequestHeader UUID sportId){
+
+        return deleteSportService.deleteSport(token, role , sportId);
     }
 }
