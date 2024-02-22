@@ -26,8 +26,6 @@ Before running the service, make sure to set up your environment variables. You 
 Here are the example environment variables:
 
 ```plaintext
-
-
 AUTH_SERVICE_URL= ${URL}/api/getuserdetailsbytoken
 DATABASE URL FOR DATABASE MYSQL IN LOCAL SYSTEM =  jdbc:mysql://${MYSQL_HOST:localhost}:3306/{DATBASE NAME}
 USERNAME= YOUR DATBASE USERNAME
