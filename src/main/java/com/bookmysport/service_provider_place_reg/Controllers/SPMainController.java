@@ -22,6 +22,7 @@ import com.bookmysport.service_provider_place_reg.Services.DeleteImagesService;
 import com.bookmysport.service_provider_place_reg.Services.FetchSportsImages;
 import com.bookmysport.service_provider_place_reg.Services.ImageUploadService;
 import com.bookmysport.service_provider_place_reg.Services.SearchPlaygroundService;
+import com.bookmysport.service_provider_place_reg.Services.SportRatingService;
 import com.bookmysport.service_provider_place_reg.Services.UpdateSportDetials;
 import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 
@@ -49,6 +50,9 @@ public class SPMainController {
 
     @Autowired
     private SearchPlaygroundService searchPlaygroundService;
+
+    @Autowired
+    private SportRatingService sportRatingService;
 
     @GetMapping("getdetails")
     public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
@@ -99,5 +103,11 @@ public class SPMainController {
     public List<Object> searchBySportName(@RequestHeader String searchItem)
     {
         return searchPlaygroundService.searchBySportName(searchItem);
+    }
+
+    @PostMapping("addsportrating")
+    public ResponseEntity<ResponseMessage> addSportRating(@RequestHeader String spId,@RequestHeader String sportId,@RequestHeader float rating)
+    {
+        return sportRatingService.sportRatingService(spId, sportId, rating);
     }
 }
