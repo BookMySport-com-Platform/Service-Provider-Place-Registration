@@ -31,4 +31,10 @@ public class SportsDB {
 
     @NotNull
     private int numberOfCourts;
+
+    private double rating;
+
+    private int numberOfRatings;
+
+    private float ratingSum;
 }
