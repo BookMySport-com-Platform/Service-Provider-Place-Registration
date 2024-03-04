@@ -1,13 +1,12 @@
 package com.bookmysport.service_provider_place_reg.Services;
 
-import java.io.File;
 import java.time.Duration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.bookmysport.service_provider_place_reg.Models.KeyPath;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.StaticData.S3Data;
 
@@ -77,33 +76,36 @@ public class S3PutObjectService {
         }
     }
 
-    public ResponseEntity<ResponseMessage> putObjectService(String spId, KeyPath keyPath) {
+    public ResponseEntity<ResponseMessage> putObjectService(String spId, String key, MultipartFile image) {
         S3Client client = S3Data.s3Client;
 
         try {
             PutObjectRequest putOb = PutObjectRequest.builder()
                     .bucket(S3Data.bucketName)
-                    .key(spId + '/' + keyPath.getKey())
+                    .key(spId + '/' + key)
+                    .contentType(image.getContentType())
                     .build();
 
-            PutObjectResponse response = client.putObject(putOb, RequestBody.fromFile(new File(keyPath.getPath())));
-            
+            RequestBody requestBody = RequestBody.fromInputStream(image.getInputStream(), image.getSize());
+
+            PutObjectResponse response = client.putObject(putOb, requestBody);
+
             if (response.eTag().isEmpty()) {
                 responseMessage.setSuccess(false);
                 responseMessage
-                        .setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied " + response.eTag());
+                        .setMessage("Object " + spId + '/' + key + " insertion falied " + response.eTag());
                 return ResponseEntity.ok().body(responseMessage);
             } else {
                 responseMessage.setSuccess(true);
                 responseMessage
-                        .setMessage(preSignedURLService(spId, spId + '/' + keyPath.getKey()).getBody().getMessage());
+                        .setMessage(preSignedURLService(spId, spId + '/' + key).getBody().getMessage());
 
                 return ResponseEntity.ok().body(responseMessage);
             }
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Object " + spId + '/' + keyPath.getKey() + " insertion falied "+e.getMessage());
+            responseMessage.setMessage("Object " + spId + '/' + key + " insertion falied " + e.getMessage());
             return ResponseEntity.badRequest().body(responseMessage);
         }
     }
