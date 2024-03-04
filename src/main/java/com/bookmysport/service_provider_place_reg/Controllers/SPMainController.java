@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
 import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
@@ -72,8 +74,8 @@ public class SPMainController {
 
     @PostMapping("uploadimages")
     public ResponseEntity<ResponseMessage> uploadImages(@RequestHeader String token, @RequestHeader String role,
-            @RequestHeader List<String> imagePaths) {
-        return imageUploadService.uploadImageService(token, role, imagePaths);
+            @RequestParam("images") List<MultipartFile> images) {
+        return imageUploadService.uploadImageService(token, role, images);
     }
 
     @GetMapping("getsports")

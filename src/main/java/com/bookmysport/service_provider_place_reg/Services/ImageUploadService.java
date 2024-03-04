@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
 import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
-import com.bookmysport.service_provider_place_reg.Models.KeyPath;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Repositories.ImagesDBRepo;
 
@@ -29,37 +29,30 @@ public class ImageUploadService {
     @Autowired
     private ResponseMessage responseMessage;
 
-    public ResponseEntity<ResponseMessage> uploadImageService(String token, String role, List<String> imagePaths) {
+    public ResponseEntity<ResponseMessage> uploadImageService(String token, String role, List<MultipartFile> images) {
         try {
 
             String failedImages = "";
 
-            for (int i = 0; i < imagePaths.size(); i++) {
-
-                // Need to figure out the bug (If we place the spid which is on line 37 outside
-                // for loop then the iteration after i=0, will be stopped with an exeption
-                // saying Long string for an UUID.)
+            for (int i = 0; i < images.size(); i++) {
+                
                 ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
 
                 ImagesDB imagesDB = new ImagesDB();
 
                 UUID imageUUID = UUID.randomUUID();
-                UUID keyToBeSet=imageUUID;
+                UUID key=imageUUID;
                 imagesDB.setImageId(imageUUID);
 
                 imagesDB.setSpId(UUID.fromString(spId.getBody().getMessage()));
 
-                KeyPath keyPath = new KeyPath();
-                keyPath.setKey(keyToBeSet.toString());
-                keyPath.setPath(imagePaths.get(i));
-
-                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), keyPath).getBody();
+                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), key.toString(),images.get(i)).getBody();
 
                 if (messageFromPutObjectService.getSuccess()) {
                     imagesDB.setImageURL(messageFromPutObjectService.getMessage());
                     imagesDBRepo.save(imagesDB);
                 } else {
-                    failedImages += keyPath.getPath();
+                    failedImages += images.get(i).getOriginalFilename();
                     failedImages += ", ";
                     failedImages+= "Reason: "+messageFromPutObjectService.getMessage();
                 }
