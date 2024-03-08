@@ -79,10 +79,11 @@ public class S3PutObjectService {
     public ResponseEntity<ResponseMessage> putObjectService(String spId, String key, MultipartFile image) {
         S3Client client = S3Data.s3Client;
 
+        String folderName = System.getenv("FOLDER_FOR_SERVICE_PROVIDER_IMAGES");
         try {
             PutObjectRequest putOb = PutObjectRequest.builder()
                     .bucket(S3Data.bucketName)
-                    .key(spId + '/' + key)
+                    .key(folderName + '/' + spId + '/' + key)
                     .contentType(image.getContentType())
                     .build();
 
@@ -93,19 +94,21 @@ public class S3PutObjectService {
             if (response.eTag().isEmpty()) {
                 responseMessage.setSuccess(false);
                 responseMessage
-                        .setMessage("Object " + spId + '/' + key + " insertion falied " + response.eTag());
+                        .setMessage("Object " + folderName + '/' + spId + '/' + key + " insertion falied "
+                                + response.eTag());
                 return ResponseEntity.ok().body(responseMessage);
             } else {
                 responseMessage.setSuccess(true);
                 responseMessage
-                        .setMessage(preSignedURLService(spId, spId + '/' + key).getBody().getMessage());
+                        .setMessage(
+                                preSignedURLService(spId, folderName + '/' + spId + '/' + key).getBody().getMessage());
 
                 return ResponseEntity.ok().body(responseMessage);
             }
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Object " + spId + '/' + key + " insertion falied " + e.getMessage());
+            responseMessage.setMessage("Object " + folderName + '/' +spId + '/' + key + " insertion falied " + e.getMessage());
             return ResponseEntity.badRequest().body(responseMessage);
         }
     }
