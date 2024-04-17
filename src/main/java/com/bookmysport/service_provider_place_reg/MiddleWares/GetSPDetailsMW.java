@@ -47,7 +47,7 @@ public class GetSPDetailsMW {
             } else {
                 responseMessage.setSuccess(false);
                 responseMessage.setMessage("No user exists");
-                return ResponseEntity.badRequest().body(responseMessage);
+                return ResponseEntity.ok().body(responseMessage);
             }
 
         } catch (Exception e) {

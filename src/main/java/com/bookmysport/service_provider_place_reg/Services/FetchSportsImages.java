@@ -53,7 +53,7 @@ public class FetchSportsImages {
             } else {
                 responseMessage.setSuccess(false);
                 responseMessage.setMessage("Sport with this id doesn't exists.");
-                return ResponseEntity.badRequest().body(responseMessage);
+                return ResponseEntity.ok().body(responseMessage);
             }
 
         } catch (Exception e) {

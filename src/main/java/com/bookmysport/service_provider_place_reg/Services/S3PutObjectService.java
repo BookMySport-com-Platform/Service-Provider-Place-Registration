@@ -72,7 +72,7 @@ public class S3PutObjectService {
         } catch (Exception e) {
             responseMessage.setSuccess(false);
             responseMessage.setMessage("Internal Server Error " + e.getMessage());
-            return ResponseEntity.badRequest().body(responseMessage);
+            return ResponseEntity.ok().body(responseMessage);
         }
     }
 
@@ -109,7 +109,7 @@ public class S3PutObjectService {
         } catch (Exception e) {
             responseMessage.setSuccess(false);
             responseMessage.setMessage("Object " + folderName + '/' +spId + '/' + key + " insertion falied " + e.getMessage());
-            return ResponseEntity.badRequest().body(responseMessage);
+            return ResponseEntity.ok().body(responseMessage);
         }
     }
 }
