@@ -66,11 +66,6 @@ public class SPMainController {
     @Autowired
     private ImagesDBRepo imagesDBRepo;
 
-    @GetMapping("getdetails")
-    public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
-        return getSPDetailsMW.getSPDetailsByToken(token, role);
-    }
-
     @PostMapping("uploadsports")
     public ResponseEntity<ResponseMessage> uploadSports(@RequestHeader String token, @RequestHeader String role,
             @RequestBody List<PriceSportCourts> pricePerSport) {
