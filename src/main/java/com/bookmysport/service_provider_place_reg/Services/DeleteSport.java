@@ -13,11 +13,6 @@ import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
 import com.bookmysport.service_provider_place_reg.Models.SportsDB;
 import com.bookmysport.service_provider_place_reg.Repositories.SportsDBRepo;
 
-// @Author - Nikunj Khandelwal
-// This Service Class is used to delete the sport information present in the database 
-// With respect to the Sport Id provided by the service provider 
-
-
 @Service
 public class DeleteSport {
 
@@ -35,13 +30,10 @@ private GetSPDetailsMW getSPDetailsMW;
      
         try {
             // Validate the token and role
-            ResponseEntity<ResponseMessage> spDetailsResponse = getSPDetailsMW.getSPDetailsByToken(token, role);
-            if (spDetailsResponse.getStatusCode() != HttpStatus.OK) {
-                return ResponseEntity.status(spDetailsResponse.getStatusCode()).body(spDetailsResponse.getBody());
-            }
+            String spDetailsResponse = getSPDetailsMW.getSPDetailsByToken(token, role).getBody().getMessage();
     
             // Check if the sport exists in the database
-            SportsDB sportToDelete = sportsDBRepo.findBySpIdAndSportId(UUID.fromString(spDetailsResponse.getBody().getMessage()),sportId);
+            SportsDB sportToDelete = sportsDBRepo.findBySpIdAndSportId(UUID.fromString(spDetailsResponse),sportId);
             if (sportToDelete == null) {
                 responseMessage.setSuccess(false);
                 responseMessage.setMessage("Sport with ID " + sportId + " does not exist.");

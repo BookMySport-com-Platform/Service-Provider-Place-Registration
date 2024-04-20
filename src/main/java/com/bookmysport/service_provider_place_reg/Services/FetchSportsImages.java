@@ -32,14 +32,14 @@ public class FetchSportsImages {
 
     public List<SportsDB> fetchSportsService(String token, String role) {
 
-        ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
-        List<SportsDB> sports = sportsDBRepo.findBySpId(UUID.fromString(spId.getBody().getMessage()));
+        String spId = getSPDetailsMW.getSPDetailsByToken(token, role).getBody().getMessage();
+        List<SportsDB> sports = sportsDBRepo.findBySpId(UUID.fromString(spId));
         return sports;
     }
 
     public List<ImagesDB> fetchImagesService(String token, String role) {
-        ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
-        List<ImagesDB> images = imagesDBRepo.findBySpId(UUID.fromString(spId.getBody().getMessage()));
+        String spId = getSPDetailsMW.getSPDetailsByToken(token, role).getBody().getMessage();
+        List<ImagesDB> images = imagesDBRepo.findBySpId(UUID.fromString(spId));
         return images;
     }
 

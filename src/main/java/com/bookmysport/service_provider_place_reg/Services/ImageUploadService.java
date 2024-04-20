@@ -36,7 +36,7 @@ public class ImageUploadService {
 
             for (int i = 0; i < images.size(); i++) {
                 
-                ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
+                String spId = getSPDetailsMW.getSPDetailsByToken(token, role).getBody().getMessage();
 
                 ImagesDB imagesDB = new ImagesDB();
 
@@ -44,9 +44,9 @@ public class ImageUploadService {
                 UUID key=imageUUID;
                 imagesDB.setImageId(imageUUID);
 
-                imagesDB.setSpId(UUID.fromString(spId.getBody().getMessage()));
+                imagesDB.setSpId(UUID.fromString(spId));
 
-                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), key.toString(),images.get(i)).getBody();
+                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId, key.toString(),images.get(i)).getBody();
 
                 if (messageFromPutObjectService.getSuccess()) {
                     imagesDB.setImageURL(messageFromPutObjectService.getMessage());

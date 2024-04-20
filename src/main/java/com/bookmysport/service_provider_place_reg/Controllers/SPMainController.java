@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.bookmysport.service_provider_place_reg.MiddleWares.GetSPDetailsMW;
 import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 import com.bookmysport.service_provider_place_reg.Models.PriceSportCourts;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
@@ -33,9 +32,6 @@ import com.bookmysport.service_provider_place_reg.Services.UploadSportsService;
 @RestController
 @RequestMapping("api")
 public class SPMainController {
-
-    @Autowired
-    private GetSPDetailsMW getSPDetailsMW;
 
     @Autowired
     private UploadSportsService uploadSportsService;
@@ -61,11 +57,6 @@ public class SPMainController {
     @Autowired
     private SportRatingService sportRatingService;
 
-    @GetMapping("getdetails")
-    public ResponseEntity<ResponseMessage> getSPDetaills(@RequestHeader String token, @RequestHeader String role) {
-        return getSPDetailsMW.getSPDetailsByToken(token, role);
-    }
-
     @PostMapping("uploadsports")
     public ResponseEntity<ResponseMessage> uploadSports(@RequestHeader String token, @RequestHeader String role,
             @RequestBody List<PriceSportCourts> pricePerSport) {
@@ -89,38 +80,36 @@ public class SPMainController {
     }
 
     @GetMapping("getsportbyspidandsportid")
-    public ResponseEntity<Object> getSportBySportIdAndSpId(@RequestHeader String spId,@RequestHeader String sportId)
-    {
-        return fetchSportsImages.fetchSportBySportIdAndSpIdService(spId ,sportId);
+    public ResponseEntity<Object> getSportBySportIdAndSpId(@RequestHeader String spId, @RequestHeader String sportId) {
+        return fetchSportsImages.fetchSportBySportIdAndSpIdService(spId, sportId);
     }
 
     @PutMapping("updatesportdetails")
-    public ResponseEntity<ResponseMessage> updateSportDetails(@RequestBody SportsDB latestsportDetails)
-    {
+    public ResponseEntity<ResponseMessage> updateSportDetails(@RequestBody SportsDB latestsportDetails) {
         return updateSportDetials.updateSportDetailsService(latestsportDetails);
     }
 
     @DeleteMapping("deleteimage")
-    public ResponseEntity<ResponseMessage> deleteImage(@RequestBody ImagesDB imageInfo)
-    {
+    public ResponseEntity<ResponseMessage> deleteImage(@RequestBody ImagesDB imageInfo) {
         return deleteImagesService.deleteImageService(imageInfo);
     }
 
     @GetMapping("getbysportname")
-    public List<Object> searchBySportName(@RequestHeader String searchItem)
-    {
+    public List<Object> searchBySportName(@RequestHeader String searchItem) {
         return searchPlaygroundService.searchBySportName(searchItem);
     }
 
     @DeleteMapping("deletesport")
-    public ResponseEntity<ResponseMessage> deleteSport(@RequestHeader String token ,@RequestHeader String role ,@RequestHeader UUID sportId){
+    public ResponseEntity<ResponseMessage> deleteSport(@RequestHeader String token, @RequestHeader String role,
+            @RequestHeader UUID sportId) {
 
-        return deleteSportService.deleteSport(token, role , sportId);
+        return deleteSportService.deleteSport(token, role, sportId);
     }
 
     @PostMapping("addsportrating")
-    public ResponseEntity<ResponseMessage> addSportRating(@RequestHeader String spId,@RequestHeader String sportId,@RequestHeader float rating)
-    {
+    public ResponseEntity<ResponseMessage> addSportRating(@RequestHeader String spId, @RequestHeader String sportId,
+            @RequestHeader float rating) {
         return sportRatingService.sportRatingService(spId, sportId, rating);
     }
+
 }

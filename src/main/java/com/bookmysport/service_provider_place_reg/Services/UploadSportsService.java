@@ -29,17 +29,17 @@ public class UploadSportsService {
     public ResponseEntity<ResponseMessage> uploadSportsInfoService(List<PriceSportCourts> pricePerSport, String token,
             String role) {
         try {
-            ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
+            String spId = getSPDetailsMW.getSPDetailsByToken(token, role).getBody().getMessage();
 
             String duplicatesMessage = "";
 
             for (int i = 0; i < pricePerSport.size(); i++) {
 
-                SportsDB sportExistence=sportsDBRepo.findBySpIdAndSportName(UUID.fromString(spId.getBody().getMessage()),pricePerSport.get(i).getSport());
+                SportsDB sportExistence=sportsDBRepo.findBySpIdAndSportName(UUID.fromString(spId),pricePerSport.get(i).getSport());
 
                 if (sportExistence == null) {
                     SportsDB sportsdb = new SportsDB();
-                    sportsdb.setSpId(UUID.fromString(spId.getBody().getMessage()));
+                    sportsdb.setSpId(UUID.fromString(spId));
                     sportsdb.setSportName(pricePerSport.get(i).getSport());
                     sportsdb.setPricePerHour(pricePerSport.get(i).getPrice());
                     sportsdb.setNumberOfCourts(pricePerSport.get(i).getNumberOfCourts());
