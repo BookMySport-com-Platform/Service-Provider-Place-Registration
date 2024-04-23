@@ -35,18 +35,25 @@ public class ImageUploadService {
             String failedImages = "";
 
             for (int i = 0; i < images.size(); i++) {
-                
+
                 ResponseEntity<ResponseMessage> spId = getSPDetailsMW.getSPDetailsByToken(token, role);
+
+                if (imagesDBRepo.findBySpId(UUID.fromString(spId.getBody().getMessage())).size() == 5) {
+                    responseMessage.setSuccess(false);
+                    responseMessage.setMessage("Image limit reached. Delete the previuos images to upload new images");
+                    return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+                }
 
                 ImagesDB imagesDB = new ImagesDB();
 
                 UUID imageUUID = UUID.randomUUID();
-                UUID key=imageUUID;
+                UUID key = imageUUID;
                 imagesDB.setImageId(imageUUID);
 
                 imagesDB.setSpId(UUID.fromString(spId.getBody().getMessage()));
 
-                ResponseMessage messageFromPutObjectService = s3PutObjectService.putObjectService(spId.getBody().getMessage(), key.toString(),images.get(i)).getBody();
+                ResponseMessage messageFromPutObjectService = s3PutObjectService
+                        .putObjectService(spId.getBody().getMessage(), key.toString(), images.get(i)).getBody();
 
                 if (messageFromPutObjectService.getSuccess()) {
                     imagesDB.setImageURL(messageFromPutObjectService.getMessage());
@@ -54,7 +61,7 @@ public class ImageUploadService {
                 } else {
                     failedImages += images.get(i).getOriginalFilename();
                     failedImages += ", ";
-                    failedImages+= "Reason: "+messageFromPutObjectService.getMessage();
+                    failedImages += "Reason: " + messageFromPutObjectService.getMessage();
                 }
             }
 

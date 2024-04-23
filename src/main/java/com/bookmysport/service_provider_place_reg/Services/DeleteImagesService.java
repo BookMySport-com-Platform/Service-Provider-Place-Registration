@@ -25,7 +25,8 @@ public class DeleteImagesService {
         S3Client client = S3Data.s3Client;
         try {
             String bucketName = System.getenv("BUCKET_NAME");
-            String key = imageInfo.getSpId().toString() + '/' + imageInfo.getImageId();
+            String serviceProviderFolder=System.getenv("FOLDER_FOR_SERVICE_PROVIDER_IMAGES");
+            String key = serviceProviderFolder + '/'+imageInfo.getSpId().toString() + '/' + imageInfo.getImageId();
             if (s3PutObjectService.checkObjectInBucket(bucketName, key)) {
                 DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
                         .bucket(bucketName)
