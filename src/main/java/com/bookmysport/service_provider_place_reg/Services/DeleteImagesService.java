@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
+import com.bookmysport.service_provider_place_reg.Repositories.ImagesDBRepo;
 import com.bookmysport.service_provider_place_reg.StaticData.S3Data;
 
 import software.amazon.awssdk.services.s3.S3Client;
@@ -21,6 +22,9 @@ public class DeleteImagesService {
     @Autowired
     private S3PutObjectService s3PutObjectService;
 
+    @Autowired
+    private ImagesDBRepo imagesDBRepo;
+
     public ResponseEntity<ResponseMessage> deleteImageService(ImagesDB imageInfo) {
         S3Client client = S3Data.s3Client;
         try {
@@ -34,6 +38,8 @@ public class DeleteImagesService {
                         .build();
 
                 client.deleteObject(deleteObjectRequest);
+
+                imagesDBRepo.deleteById(imageInfo.getImageId());
 
                 responseMessage.setSuccess(true);
                 responseMessage.setMessage("Object '" + key + "' deletion success!");

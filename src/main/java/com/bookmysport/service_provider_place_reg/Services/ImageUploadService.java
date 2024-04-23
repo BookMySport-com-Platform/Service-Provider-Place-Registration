@@ -40,7 +40,7 @@ public class ImageUploadService {
 
                 if (imagesDBRepo.findBySpId(UUID.fromString(spId.getBody().getMessage())).size() == 5) {
                     responseMessage.setSuccess(false);
-                    responseMessage.setMessage("Image limit reached. Delete the previuos images to upload new images");
+                    responseMessage.setMessage("Image limit reached. Delete the previous images to upload new images");
                     return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
                 }
 
