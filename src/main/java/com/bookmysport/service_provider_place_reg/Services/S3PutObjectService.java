@@ -1,13 +1,18 @@
 package com.bookmysport.service_provider_place_reg.Services;
 
 import java.time.Duration;
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.bookmysport.service_provider_place_reg.Models.ImagesDB;
 import com.bookmysport.service_provider_place_reg.Models.ResponseMessage;
+import com.bookmysport.service_provider_place_reg.Repositories.ImagesDBRepo;
 import com.bookmysport.service_provider_place_reg.StaticData.S3Data;
 
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -25,6 +30,28 @@ public class S3PutObjectService {
 
     @Autowired
     private ResponseMessage responseMessage;
+
+    @Autowired
+    private ImagesDBRepo imagesDBRepo;
+
+    @Scheduled(fixedRate = 86400)
+    public void deleteExpiredRecords() {
+        LocalDate expiryTime = LocalDate.now().minusDays(1);
+
+        List<ImagesDB> imagesFromDB = imagesDBRepo.findByDateOfGenration(expiryTime);
+        String folderName = System.getenv("FOLDER_FOR_SERVICE_PROVIDER_IMAGES");
+
+        for (int i = 0; i < imagesFromDB.size(); i++) {
+
+            String key = folderName + '/' + imagesFromDB.get(i).getSpId() + '/' + imagesFromDB.get(i).getImageId();
+            ResponseEntity<ResponseMessage> newPresignedURL = preSignedURLService(
+                    imagesFromDB.get(i).getSpId().toString(), key);
+            imagesFromDB.get(i).setImageURL(newPresignedURL.getBody().getMessage());
+            imagesFromDB.get(i).setDateOfGenration(LocalDate.now());
+            imagesDBRepo.save(imagesFromDB.get(i));
+
+        }
+    }
 
     public boolean checkObjectInBucket(String bucketName, String key) {
         S3Client s3Client = S3Data.s3Client;
@@ -54,7 +81,7 @@ public class S3PutObjectService {
                         .build();
 
                 GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                        .signatureDuration(Duration.ofHours(10))
+                        .signatureDuration(Duration.ofHours(12))
                         .getObjectRequest(request)
                         .build();
 
@@ -108,7 +135,8 @@ public class S3PutObjectService {
 
         } catch (Exception e) {
             responseMessage.setSuccess(false);
-            responseMessage.setMessage("Object " + folderName + '/' +spId + '/' + key + " insertion falied " + e.getMessage());
+            responseMessage.setMessage(
+                    "Object " + folderName + '/' + spId + '/' + key + " insertion falied " + e.getMessage());
             return ResponseEntity.ok().body(responseMessage);
         }
     }

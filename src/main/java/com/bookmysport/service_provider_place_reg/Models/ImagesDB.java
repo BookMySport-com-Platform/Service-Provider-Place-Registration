@@ -1,5 +1,6 @@
 package com.bookmysport.service_provider_place_reg.Models;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -17,4 +18,6 @@ public class ImagesDB {
     private String imageURL;
 
     private UUID spId;
+
+    private LocalDate dateOfGenration;
 }
