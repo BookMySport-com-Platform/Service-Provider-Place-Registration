@@ -36,19 +36,22 @@ public class S3PutObjectService {
 
     @Scheduled(fixedRate = 86400)
     public void deleteExpiredRecords() {
-        LocalDate expiryTime = LocalDate.now().minusDays(1);
+        LocalDate expiryTime = LocalDate.now();
 
-        List<ImagesDB> imagesFromDB = imagesDBRepo.findByDateOfGenration(expiryTime);
+        List<ImagesDB> imagesFromDB = imagesDBRepo.findAll();
         String folderName = System.getenv("FOLDER_FOR_SERVICE_PROVIDER_IMAGES");
 
         for (int i = 0; i < imagesFromDB.size(); i++) {
 
-            String key = folderName + '/' + imagesFromDB.get(i).getSpId() + '/' + imagesFromDB.get(i).getImageId();
-            ResponseEntity<ResponseMessage> newPresignedURL = preSignedURLService(
-                    imagesFromDB.get(i).getSpId().toString(), key);
-            imagesFromDB.get(i).setImageURL(newPresignedURL.getBody().getMessage());
-            imagesFromDB.get(i).setDateOfGenration(LocalDate.now());
-            imagesDBRepo.save(imagesFromDB.get(i));
+            if(imagesFromDB.get(i).getDateOfGenration().isBefore(expiryTime))
+            {
+                String key = folderName + '/' + imagesFromDB.get(i).getSpId() + '/' + imagesFromDB.get(i).getImageId();
+                ResponseEntity<ResponseMessage> newPresignedURL = preSignedURLService(
+                        imagesFromDB.get(i).getSpId().toString(), key);
+                imagesFromDB.get(i).setImageURL(newPresignedURL.getBody().getMessage());
+                imagesFromDB.get(i).setDateOfGenration(LocalDate.now());
+                imagesDBRepo.save(imagesFromDB.get(i));
+            }            
 
         }
     }
