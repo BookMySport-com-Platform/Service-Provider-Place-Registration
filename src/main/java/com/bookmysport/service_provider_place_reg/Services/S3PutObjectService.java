@@ -34,7 +34,7 @@ public class S3PutObjectService {
     @Autowired
     private ImagesDBRepo imagesDBRepo;
 
-    @Scheduled(fixedRate = 86400)
+    @Scheduled(fixedRate = 86400000)
     public void deleteExpiredRecords() {
         LocalDate expiryTime = LocalDate.now();
 
