@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sp-config
+data:
+  mysql-url: jdbc:mysql://3.109.123.14:3306/bookmysport
+  auth-service-url: http://a917ab835444c40c1a529af1b78e44b5-1442801337.ap-south-1.elb.amazonaws.com/api/getuserdetailsbytoken
+  search-url-of-as: http://a917ab835444c40c1a529af1b78e44b5-1442801337.ap-south-1.elb.amazonaws.com/api/searchbyaddressandcentrename
+  search-info-by-spid: http://a917ab835444c40c1a529af1b78e44b5-1442801337.ap-south-1.elb.amazonaws.com/api/getdetailsbyspid
+  folder-for-service-provider-images: ServiceProvidersImages
+  bucket-name: bookmysport.com

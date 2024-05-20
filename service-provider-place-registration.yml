@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-provider-place-registration-deployment
+  labels:
+    app: sp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sp
+  template:
+    metadata:
+      labels:
+        app: sp
+    spec:
+      containers:
+        - name: sp
+          image: 471112650922.dkr.ecr.ap-south-1.amazonaws.com/service-provider-place-registration:latest
+          ports:
+            - containerPort: 8070
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: mysql-url
+            - name: USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: sp-secret
+                  key: mysql-user
+            - name: PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sp-secret
+                  key: mysql-password
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sp-secret
+                  key: sp-secret-key
+            - name: BUCKET_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: bucket-name
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sp-secret
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sp-secret
+                  key: aws-secret-key
+            - name: SEARCH_URL_OF_AS
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: search-url-of-as
+            - name: SEACRH_INFO_BY_SPID
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: search-info-by-spid
+            - name: FOLDER_FOR_SERVICE_PROVIDER_IMAGES
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: folder-for-service-provider-images
+            - name: AUTH_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: sp-config
+                  key: auth-service-url
+

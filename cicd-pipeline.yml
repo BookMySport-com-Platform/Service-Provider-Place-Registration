@@ -1,0 +1,59 @@
+version: 0.2
+run-as: root
+
+phases:
+
+  install:
+    commands:
+      - echo Installing app dependencies...
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.3/2024-04-19/bin/linux/amd64/kubectl
+      - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.29.3/2024-04-19/bin/linux/amd64/kubectl.sha256
+      - sha256sum -c kubectl.sha256
+      - openssl sha1 -sha256 kubectl
+      - chmod +x ./kubectl
+      - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+      - echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+      - source ~/.bashrc
+      - echo 'Check kubectl version'
+      - kubectl version --client
+      - echo "AWS Version Check successfully"
+      - aws --version
+
+  pre_build:
+    commands:
+      - echo Uploading aws credentials
+      - aws configure set aws_access_key_id $YOUR_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $YOUR_SECRET_ACCESS_KEY
+      - echo Logging in to Amazon EKS...
+      - aws eks update-kubeconfig --region $AWS_DEFAULT_REGION --name $AWS_CLUSTER_NAME
+      - echo check config 
+      - kubectl config view --minify
+      - echo check kubectl access
+      - kubectl get svc
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - REPOSITORY_URI=$ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - docker pull $REPOSITORY_URI:$IMAGE_TAG
+      
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build --cache-from $REPOSITORY_URI:$IMAGE_TAG -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Push the latest image to cluster
+      - kubectl apply -f sp-config.yml
+      - kubectl apply -f sp-secret.yml
+      - kubectl apply -f service-provider-place-registration.yml
+      - kubectl apply -f sppr-service.yml
+      - kubectl rollout restart -f service-provider-place-registration.yml
+      - echo Deployed successfully
+      - echo Checking kubectl status
+      - kubectl get all
